@@ -69,6 +69,26 @@ APK: `app/build/outputs/apk/debug/app-debug.apk`.
 Đây là bản debug đã ký để cài trực tiếp, chưa phải bản phát hành trên cửa hàng.
 Muốn giữ khả năng nâng cấp cùng ứng dụng về sau, cần dùng cùng signing key.
 
+## Build bằng GitHub Actions
+
+Workflow [Android CI](.github/workflows/android.yml) tự chạy khi push lên `main` hoặc mở/cập nhật PR vào `main`.
+Workflow dùng Java 21, Android SDK 36 và Gradle Wrapper của project; chạy unit tests và lint,
+sau đó build APK debug khi các kiểm tra đều qua. Không cần cấu hình secrets.
+
+Để chạy thủ công và tải APK:
+
+1. Push code có workflow này lên nhánh `main` trên GitHub.
+2. Vào **Actions → Android CI → Run workflow**, chọn nhánh rồi bấm **Run workflow**.
+3. Mở lần chạy đã hoàn tất, xuống **Artifacts** và tải **app-debug.apk** để cài lên thiết bị.
+4. Artifact **android-test-reports** chứa kết quả unit tests và báo cáo lint, kể cả khi kiểm tra thất bại.
+
+Các artifact được giữ 14 ngày. Workflow này chưa chạy UI/player tests trên emulator;
+những kiểm thử đó vẫn chạy riêng theo hướng dẫn bên dưới.
+
+APK dùng debug key do runner tạo nên có thể khác chữ ký của bản local hoặc lần build trước.
+Nếu cài đè báo `INSTALL_FAILED_UPDATE_INCOMPATIBLE`, cần gỡ bản cũ trước khi cài (cache app sẽ bị xóa).
+Để cập nhật lâu dài mà không phải gỡ app, cần cấu hình signing key cố định.
+
 ## Cài lên TV qua ADB
 
 Bật ADB/debug mạng trên TV và kết nối Mac cùng mạng. Thay `<IP_TV>` bằng địa chỉ TV:
