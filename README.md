@@ -1,7 +1,7 @@
 # CTTV
 
 Ứng dụng IPTV Việt Nam cho Android TV, viết bằng Kotlin, Compose for TV và Media3/ExoPlayer.
-Mở app, chọn kênh và xem; không cần tài khoản hoặc backend.
+Mở app, chọn Truyền hình để xem các kênh Việt Nam hoặc Bóng đá để chọn trận và BLV; không cần tài khoản hoặc backend.
 
 ![Giao diện CTTV trên máy ảo Android](docs/screenshots/catalog.png)
 
@@ -9,7 +9,11 @@ Mở app, chọn kênh và xem; không cần tài khoản hoặc backend.
 
 - Chỉ tải [playlist Việt Nam của iptv-org](https://iptv-org.github.io/iptv/countries/vn.m3u).
 - Tìm tên kênh, hiển thị logo và xem toàn màn hình; các kênh có tên bắt đầu bằng VTV được xếp trước.
-- Mở app tự focus vào Việt Nam; OK hoặc phím phải đưa focus vào danh sách kênh.
+- Mở app có hai lựa chọn: **Truyền hình** và **Bóng đá**, mặc định focus Truyền hình.
+- Chọn Truyền hình mới tải danh sách và tự focus vào Việt Nam; OK hoặc phím phải đưa focus vào danh sách kênh.
+- Bóng đá tải toàn bộ danh sách trận từ Gavang, ưu tiên trận trực tiếp; hiển thị đội, giải, tỷ số và giờ Việt Nam.
+- Chọn trận để tải BLV, chọn BLV để phát HLS. Những BLV chưa có nguồn HLS được ghi rõ, không dùng video mặc định thay cho trận.
+- Back đi từ video bóng đá → danh sách BLV → danh sách trận → màn hình chọn mục, giữ focus tại lựa chọn vừa xem.
 - Điều khiển bằng remote: phím hướng di chuyển, OK chọn, Back trở về.
 - Quay lại danh sách ở vị trí và kênh vừa xem.
 - Gom mục trùng ID; tự thử nguồn tiếp theo khi một nguồn bị lỗi.
@@ -108,7 +112,7 @@ Xác nhận hộp thoại cho phép debug trên TV nếu xuất hiện.
 Nạp `.env` nếu có và cấu hình JDK như phần build trước khi chạy:
 
 ```sh
-./gradlew :app:testDebugUnitTest --tests 'dev.cttv.data.*' --no-daemon
+./gradlew :app:testDebugUnitTest --tests 'dev.cttv.data.*' --tests 'dev.cttv.football.*' --no-daemon
 ./gradlew :app:lintDebug --no-daemon
 ```
 
@@ -116,19 +120,38 @@ Kiểm thử UI/player trên thiết bị hoặc máy ảo riêng dành cho ki�
 
 ```sh
 ANDROID_SERIAL=<serial> ./gradlew :app:connectedDebugAndroidTest \
-  -Pandroid.testInstrumentationRunnerArguments.class=dev.cttv.ui.CatalogScreenTest,dev.cttv.ui.PlayerScreenTest \
+  -Pandroid.testInstrumentationRunnerArguments.class=dev.cttv.ui.CttvAppTest,dev.cttv.ui.CatalogScreenTest,dev.cttv.ui.FootballScreenTest,dev.cttv.ui.PlayerScreenTest \
   --no-daemon
 ```
 
 Unit tests kiểm tra parser, header, URL hợp lệ, bộ lọc và cache khi lỗi mạng/dữ liệu.
-UI tests kiểm tra remote, focus khi quay lại, bộ lọc, phát video, nguồn dự phòng và màn hình lỗi.
+UI tests kiểm tra màn hình chọn mục, remote, focus khi quay lại, bộ lọc, phát video, nguồn dự phòng và màn hình lỗi.
+Kiểm thử bóng đá kiểm tra cấu hình API động, danh sách trận/BLV, chọn đúng HLS, header phát, lỗi nguồn và hủy tải khi Back.
 Có kiểm thử đi từ Việt Nam đến danh sách kênh, phát video và quay lại chỉ bằng bốn phím hướng, OK và Back.
 Video kiểm thử là mẫu hình/mẫu âm thanh được tạo bằng FFmpeg, chỉ nằm trong APK kiểm thử.
 
 Máy ảo kiểm tra là Android thông thường với màn hình ngang, chưa thay thế kiểm tra trên Mi TV ARM 32-bit.
 
+## Thêm hoặc thay nguồn bóng đá
+
+![Danh sách trận Gavang trên máy ảo Android](docs/screenshots/football.png)
+
+`football/FootballSource.kt` định nghĩa hai thao tác: tải trận và tải BLV cho một trận.
+Mỗi BLV trả về danh sách `Stream` riêng (URL và header); UI và player không đọc HTML/JSON của website.
+
+`football/sources/GavangSource.kt` chứa toàn bộ địa chỉ và cách đọc dữ liệu của Gavang:
+
+- Đọc cấu hình API động từ `https://gvabc.cc/websocket`, dự phòng bằng `https://gavang33.uk/config.json`, giống JavaScript của website.
+- Gọi danh sách và chi tiết trận với `webType=gavang`, gộp BLV riêng từ danh sách khi chi tiết chưa có.
+- Giữ HLS của đúng BLV, bao gồm server dự phòng; không dùng FLV hay `defaultLink` là video mặc định.
+- Chỉ tải chi tiết khi chọn trận; không lưu URL phát xuống đĩa. Chọn Thử lại để lấy lại nguồn mới.
+
+Để đổi website, tạo một file khác triển khai `FootballSource`, rồi thay nguồn mặc định trong constructor `FootballViewModel`.
+Không cần sửa màn hình chọn trận, chọn BLV hoặc player. Nút Cập nhật tải lại danh sách; phiên bản này chưa đồng bộ tỷ số qua WebSocket.
+
 ## Nguồn
 
-App chỉ đọc danh sách URL công khai từ [iptv-org/iptv](https://github.com/iptv-org/iptv).
+Truyền hình đọc danh sách URL công khai từ [iptv-org/iptv](https://github.com/iptv-org/iptv).
+Bóng đá đọc API công khai mà [Gavang](https://gavang33.uk/) dùng cho website.
 Video phát trực tiếp từ nhà cung cấp nguồn; dữ liệu có thể thay đổi độc lập với app.
 Một số nguồn dùng HTTP nên app cho phép cleartext traffic để phát những nguồn này.

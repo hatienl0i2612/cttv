@@ -68,7 +68,7 @@ import dev.cttv.data.matching
 import kotlinx.coroutines.launch
 
 @Composable
-fun CttvApp(state: CatalogState, onRefresh: () -> Unit) {
+fun TelevisionScreen(state: CatalogState, onRefresh: () -> Unit) {
     var query by rememberSaveable { mutableStateOf("") }
     var playingId by rememberSaveable { mutableStateOf<String?>(null) }
     var lastPlayedId by rememberSaveable { mutableStateOf<String?>(null) }

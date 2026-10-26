@@ -61,7 +61,7 @@ import kotlinx.coroutines.delay
 
 @androidx.annotation.OptIn(UnstableApi::class)
 @Composable
-fun PlayerScreen(channel: Channel, onClose: () -> Unit) {
+fun PlayerScreen(channel: Channel, subtitle: String = channel.countries.joinToString(" · "), onClose: () -> Unit) {
     val context = LocalContext.current
     val streams = remember(channel) { channel.streams.filter { it.isHttp } }
     BackHandler(onBack = onClose)
@@ -198,11 +198,11 @@ fun PlayerScreen(channel: Channel, onClose: () -> Unit) {
                         .background(Brush.verticalGradient(listOf(Color.Black.copy(alpha = 0.85f), Color.Transparent)))
                         .padding(30.dp),
                 ) {
-                    Text("TRỰC TIẾP  /  ${channel.countries.joinToString(" · ")}", color = Accent, fontSize = 10.sp)
+                    Text("TRỰC TIẾP  /  $subtitle", color = Accent, fontSize = 10.sp)
                     Spacer(Modifier.height(8.dp))
                     Text(channel.name, color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
                     Spacer(Modifier.height(6.dp))
-                    Text("BACK · Về danh sách kênh", color = Muted, fontSize = 11.sp)
+                    Text("BACK · Quay lại", color = Muted, fontSize = 11.sp)
                 }
             }
             if (loading) {

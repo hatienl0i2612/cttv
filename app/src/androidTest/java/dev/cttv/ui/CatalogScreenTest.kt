@@ -39,7 +39,7 @@ class CatalogScreenTest {
     @Test
     fun startsWithVietnamFocusedEvenBeforeChannelsLoad() {
         val state = mutableStateOf(CatalogState())
-        compose.setContent { CttvTheme { CttvApp(state.value) {} } }
+        compose.setContent { CttvTheme { TelevisionScreen(state.value) {} } }
         compose.onNodeWithTag("country-Vietnam").assertIsFocused()
         compose.runOnIdle { state.value = CatalogState(channels, false) }
         compose.onNodeWithTag("country-Vietnam").assertIsFocused()
@@ -98,7 +98,7 @@ class CatalogScreenTest {
     fun returningFromPlaybackRestoresFocusToTheChannel() {
         compose.setContent {
             CttvTheme {
-                CttvApp(CatalogState(channels.map { it.copy(streams = listOf(Stream(video.url))) }, false)) {}
+                TelevisionScreen(CatalogState(channels.map { it.copy(streams = listOf(Stream(video.url))) }, false)) {}
             }
         }
         compose.onNodeWithTag("channel-vtv1").performClick()
@@ -114,7 +114,7 @@ class CatalogScreenTest {
         val catalog = (channels +
             (1..8).map { Channel("extra-$it", "Extra $it", null, listOf("Vietnam"), emptyList()) })
             .map { it.copy(streams = listOf(Stream(video.url))) }
-        compose.setContent { CttvTheme { CttvApp(CatalogState(catalog, false)) {} } }
+        compose.setContent { CttvTheme { TelevisionScreen(CatalogState(catalog, false)) {} } }
         compose.onNodeWithTag("country-Vietnam").assertIsFocused()
         pressRemoteKey(Key.DirectionCenter)
         compose.onNodeWithTag("channel-vtv1").assertIsFocused()

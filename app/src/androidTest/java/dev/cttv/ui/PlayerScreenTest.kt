@@ -44,7 +44,7 @@ class PlayerScreenTest {
             compose.onAllNodesWithTag("player-ready").fetchSemanticsNodes().isNotEmpty()
         }
         compose.onNodeWithText("Test TV").assertIsDisplayed()
-        compose.onNodeWithText("BACK · Về danh sách kênh").assertIsDisplayed()
+        compose.onNodeWithText("BACK · Quay lại").assertIsDisplayed()
         compose.waitUntil(4_000) {
             compose.onAllNodesWithText("Test TV").fetchSemanticsNodes().isEmpty()
         }
@@ -53,7 +53,7 @@ class PlayerScreenTest {
         compose.waitUntil(2_000) {
             compose.onAllNodesWithText("Test TV").fetchSemanticsNodes().isNotEmpty()
         }
-        compose.onNodeWithText("BACK · Về danh sách kênh").assertIsDisplayed()
+        compose.onNodeWithText("BACK · Quay lại").assertIsDisplayed()
         compose.waitUntil(4_000) {
             compose.onAllNodesWithText("Test TV").fetchSemanticsNodes().isEmpty()
         }
