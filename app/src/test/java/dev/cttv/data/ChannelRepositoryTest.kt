@@ -25,6 +25,37 @@ class ChannelRepositoryTest {
     }
 
     @Test
+    fun `raw Vietnam playlist preserves all channels and alternative streams in cache`() = runTest {
+        val playlist = """
+            #EXTM3U
+            #EXTINF:-1 tvg-id="VTV1.vn@HD",VTV1 HD (1080p)
+            https://example.com/vtv1/index.m3u8
+            #EXTINF:-1 tvg-id="HTV9.vn@HD",HTV9 HD (1080p)
+            https://example.com/htv9/index.m3u8
+            #EXTINF:-1 tvg-id="VTV1.vn@HD",VTV1 HD (720p)
+            https://backup.example.com/vtv1/index.m3u8
+            #EXTINF:-1 tvg-id="VTV1.vn@HD",VTV1 HD (1080p) [Geo-blocked]
+            https://example.com/vtv1/manifest.mpd
+        """.trimIndent()
+        val file = File(folder.root, "channels-vn.m3u")
+        val channels = ChannelRepository(file) { playlist }.refresh()
+
+        assertEquals(listOf("HTV9.vn@HD", "VTV1.vn@HD"), channels.map { it.id })
+        assertTrue(channels.all { it.countries == listOf("Vietnam") })
+        val vtv1 = channels.single { it.id == "VTV1.vn@HD" }
+        assertEquals(
+            listOf(
+                Stream("https://example.com/vtv1/index.m3u8"),
+                Stream("https://backup.example.com/vtv1/index.m3u8"),
+                Stream("https://example.com/vtv1/manifest.mpd"),
+            ),
+            vtv1.streams,
+        )
+        assertEquals(listOf(Stream("https://example.com/htv9/index.m3u8")), channels.first().streams)
+        assertEquals(channels, ChannelRepository(file) { throw IOException("offline") }.cached())
+    }
+
+    @Test
     fun `invalid server response cannot overwrite a previously working cache`() = runTest {
         val file = folder.newFile("channels-vn.m3u").apply { writeText(validPlaylist) }
         val repository = ChannelRepository(file) { "<html>Error</html>" }

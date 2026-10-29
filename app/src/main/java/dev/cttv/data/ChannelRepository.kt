@@ -42,7 +42,7 @@ class ChannelRepository(
         M3uParser.parse(playlist).map { it.copy(countries = listOf("Vietnam")) }
 
     companion object {
-        const val PLAYLIST_URL = "https://iptv-org.github.io/iptv/countries/vn.m3u"
+        const val PLAYLIST_URL = "https://raw.githubusercontent.com/iptv-org/iptv/refs/heads/master/streams/vn.m3u"
         private const val MAX_PLAYLIST_BYTES = 16 * 1024 * 1024
 
         private fun downloadPlaylist(): String {

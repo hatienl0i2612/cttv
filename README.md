@@ -7,7 +7,7 @@ Mở app, chọn Truyền hình để xem các kênh Việt Nam hoặc Bóng đ�
 
 ## Chức năng
 
-- Chỉ tải [playlist Việt Nam của iptv-org](https://iptv-org.github.io/iptv/countries/vn.m3u).
+- Tải toàn bộ kênh và nguồn phát trực tiếp từ [file nguồn Việt Nam của iptv-org](https://raw.githubusercontent.com/iptv-org/iptv/refs/heads/master/streams/vn.m3u).
 - Tìm tên kênh, hiển thị logo và xem toàn màn hình; các kênh có tên bắt đầu bằng VTV được xếp trước.
 - Mở app có hai lựa chọn: **Truyền hình** và **Bóng đá**, mặc định focus Truyền hình.
 - Chọn Truyền hình mới tải danh sách và tự focus vào Việt Nam; OK hoặc phím phải đưa focus vào danh sách kênh.
@@ -16,7 +16,7 @@ Mở app, chọn Truyền hình để xem các kênh Việt Nam hoặc Bóng đ�
 - Back đi từ video bóng đá → danh sách BLV → danh sách trận → màn hình chọn mục, giữ focus tại lựa chọn vừa xem.
 - Điều khiển bằng remote: phím hướng di chuyển, OK chọn, Back trở về.
 - Quay lại danh sách ở vị trí và kênh vừa xem.
-- Gom mục trùng ID; tự thử nguồn tiếp theo khi một nguồn bị lỗi.
+- Gom mục trùng ID, giữ các URL phát theo thứ tự trong file nguồn; tự thử nguồn tiếp theo khi một nguồn bị lỗi.
 - Giữ User-Agent/Referer/Origin được khai báo trong playlist để phát những kênh yêu cầu chúng.
 - Lưu danh sách Việt Nam trong cache riêng, hiển thị ở lần mở sau và cập nhật qua mạng. Cache chỉ chứa danh sách, không chứa video.
 - Giải phóng player khi app đi vào nền hoặc rời màn hình xem.
@@ -34,7 +34,9 @@ nguồn ngừng hoạt động và giới hạn vùng của nhà phát sóng v�
 Phần lớn giao thức phát phổ biến HLS/DASH và các file HTTP/HTTPS được Media3 hỗ trợ.
 Các nguồn RTMP/SRT/MMSH vẫn xuất hiện trong danh sách nhưng được ghi rõ là chưa hỗ trợ phát.
 Phiên bản này chưa có iOS, EPG/lịch chương trình, ghi hình hoặc giải mã phần mềm bổ sung.
-Danh sách theo vùng phát sóng Việt Nam trong playlist của iptv-org.
+Danh sách lấy từ file `streams/vn.m3u` của iptv-org, hiển thị trong mục Vietnam.
+Chọn Cập nhật để tải lại file nguồn mới nhất từ GitHub.
+File nguồn có thể thiếu logo; khi đó app hiển thị chữ viết tắt của tên kênh.
 
 ## Mở project
 
